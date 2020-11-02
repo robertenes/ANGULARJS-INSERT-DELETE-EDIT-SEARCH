@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+ <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.js"></script>
+<style>
+.md-table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.md-table-header {
+  border-bottom: 1px solid rgb(230,230,230);
+  color:rgb(130,130,130);
+  text-align: left;
+  font-size: 0.9em;
+  padding: 16px 16px 16px 0px;
+}
+
+.md-table-content {
+  padding: 16px 16px 16px 0px;
+  height: 30px;
+}
+
+.md-table-row.ng-leave.ng-leave-active,
+/*.md-table-row.ng-move,*/
+.md-table-row.ng-enter {
+  -webkit-transition:all linear 1s;
+  transition:all linear 1s;
+  position:absolute;
+  opacity:0;
+  left: 20%;
+}
+
+.md-table-row.ng-leave,
+/*.md-table-row.ng-move.ng-move-active,*/
+.md-table-row.ng-enter.ng-enter-active {
+  -webkit-transition:all linear 1s;
+  transition:all linear 1s;
+  position:absolute;
+  opacity:1;
+  left: 0;
+}
+
+	
+</style>
+<body>
+
+	<div ng-app="app">
+		<div ng-controller="MyController">
+
+		<br>
+		<div class="container">
+  <h2>Person Form with AngularJS</h2>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Name:</label>
+      <div class="col-sm-10">
+       <input type="hidden" class="form-control" ng-model="hiddenID">	
+        <input type="text" class="form-control" ng-model="Name"  placeholder="Enter Name">
+      </div>
+    </div>
+     <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Surname:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" ng-model="Surname" placeholder="Enter SurName"  >
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pwd">Mail:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="pwd" ng-model="Mail" placeholder="Enter Mail" name="pwd">
+      </div>
+    </div>
+      <div class="form-group">
+      <label class="control-label col-sm-2" for="pwd">Job State:</label>
+      <div class="col-sm-10">          
+        <select ng-model="Job" ng-options="item.Id as item.isim for item in Is" class="form-control">
+       <option value="" ng-hide="true" disabled selected>Choose a Job</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="form-check" ng-repeat="item in Sex">
+          <label class="form-check-label" >
+           <input class="form-check-input" type="checkbox" ng-change="updateSelection($index,Sex)" ng-checked="control ? (item.name == control ? true : (false)) : (item.checked)" 
+              ng-model="item.checked" >{{item.name}}  &nbsp</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="button" ng-click="control ? submit(2) : (submit(1))" class="btn btn-primary">Submit</button>
+        <label ng-show="Messagge" class="alert alert-danger">{{Messagge}}</label>
+      </div>
+    </div>
+</div>
+<div class="container">
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="email">General Search:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" ng-model="GeneralSearch" placeholder="Search All Column">
+      </div>
+    </div>
+</div>
+<br>
+<div class="container">
+ <div class="col-sm-10">
+	<table class="table md-table" >
+  <thead class="thead-dark">
+    <tr>
+      <th class="md-table-header" scope="col">#</th>
+      <th class="md-table-header" scope="col">Name</th>
+      <th class="md-table-header" scope="col">Surname</th>
+      <th class="md-table-header" scope="col">Email</th>
+      <th class="md-table-header" scope="col">Job</th>
+      <th class="md-table-header" scope="col">Sex</th>
+      <th class="md-table-header" scope="col"></th>
+      <th class="md-table-header" scope="col"></th>
+
+    </tr>
+    <tr>
+      <th class="md-table-header" scope="col"></th>
+      <th class="md-table-header" scope="col"><input type="text"  ng-model="search.Name" placeholder="Name Column Search" name=""></th>
+      <th class="md-table-header" scope="col"><input type="text" ng-model="search.Surname" placeholder="Surname Column Search" name=""></th>
+      <th class="md-table-header" scope="col"><input type="text" ng-model="search.Mail" placeholder="Mail Column Search" name=""></th>
+      <th class="md-table-header" scope="col"><input type="text" ng-model="search.Is" placeholder="Job Column Search" name=""></th>
+      <th class="md-table-header" scope="col"><input type="text" ng-model="search.Sex" placeholder="Sex Column Search" name=""></th>
+	  <th class="md-table-header" scope="col"></th>
+      <th class="md-table-header" scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="md-table-row" ng-repeat="item in data | filter : search | filter : GeneralSearch">
+      <th scope="row">{{item.ID}}</th>
+      <td class="md-table-content">{{item.Name}}</td>
+      <td class="md-table-content">{{item.Surname}}</td>
+      <td class="md-table-content">{{item.Mail}}</td>
+      <td class="md-table-content">{{item.Is}}</td>
+      <td class="md-table-content">{{item.Sex}}</td>
+      <td class="md-table-content"><button type="button" ng-click="EditF(item.ID)">Edit</button></td>
+      <td class="md-table-content"><button type="button" ng-click="DeleteF(item.ID)">Delete</button></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+	</div>	
+</div>
+		
+			
+	</div>
+<script>
+var app = angular.module("app",['ngAnimate']);
+app.controller("MyController",function($scope,$compile){
+	$scope.control = false;
+	$scope.Messagge = "";	
+	$scope.data = [
+	{"ID":1,"Name":"Namik","Surname":"isik","Mail":"isik@hotmail.com","Is":"Ogretmen","Sex":"Male"},
+	{"ID":2,"Name":"Elma","Surname":"Solak","Mail":"elmak@hotmail.com","Is":"Ogrenci","Sex":"Male"},
+	{"ID":3,"Name":"Armut","Surname":"Salak","Mail":"salak@hotmail.com","Is":"Pilot","Sex":"Female"}
+	];
+	$scope.Is = [
+	{"Id":"Teacher","isim":"Teacher"},
+	{"Id":"Student","isim":"Student"},
+	{"Id":"Pilot","isim":"Pilot"}];
+	$scope.Sex = [
+	{
+	  name: 'Male',
+      checked: true
+    },
+    {
+      name: 'Female',
+      checked: false
+    }];
+    $scope.dataTemp = {};
+    $scope.selectedList = {
+    	name: 'Male',
+    	checked : true
+    }; 
+     $scope.updateSelection = function(position, entities) {
+     	 $scope.selectedList = {};
+     	 console.log($scope.selectedList); 
+      angular.forEach(entities, function(subscription, index) {
+        if (position != index) 
+        {
+        subscription.checked = false;	
+        }
+          else
+          {
+      	 $scope.selectedList = entities[index];  
+         console.log($scope.selectedList.name)   
+          }
+         
+      });
+     }
+    $scope.submit = function (a) {
+    	if($scope.Name && $scope.Surname && $scope.Mail && $scope.Job)
+    	{
+    	$scope.control = false;
+    	if(a == 1)
+    	{
+		var count = 0;
+    	angular.forEach($scope.data,function(item,key){
+    		count++;
+    	});
+    	var sexName = $scope.selectedList.name;
+    	$scope.dataTemp = {
+    		"ID" : count+1,
+    		"Name" : $scope.Name,
+    		"Surname" : $scope.Surname,
+    		"Mail" : $scope.Mail,
+    		"Is" : $scope.Job,
+    		"Sex" : sexName	
+    	};
+
+    	$scope.data.push($scope.dataTemp);
+    	}
+
+    	else{
+    	var sexName = $scope.selectedList.name;
+    	$scope.dataEditTemp = {
+    		"Name" : $scope.Name,
+    		"Surname" : $scope.Surname,
+    		"Mail" : $scope.Mail,
+    		"Is" : $scope.Job,
+    		"Sex" : sexName	
+    	};
+    	angular.forEach($scope.data, function(item,key){
+    		if($scope.hiddenID == item.ID)
+    		{
+    			item.Name = $scope.dataEditTemp.Name;
+    			item.Surname = $scope.dataEditTemp.Surname;
+    			item.Mail = $scope.dataEditTemp.Mail;
+    			item.Is = $scope.dataEditTemp.Is;
+    			item.Sex = $scope.dataEditTemp.Sex;
+
+    		}
+    	});
+    		//console.log($scope.data);
+    		$scope.Name = "";
+    		$scope.Surname = "";
+    		$scope.Mail = "";
+    		$scope.hiddenID = "";  
+    		$scope.control = false;  		
+    	}
+    	}
+    	else
+    	{
+    		$scope.Messagge = "Please fill all form";
+    	}
+    	
+    };
+    $scope.EditF = function(id){
+    	 $scope.editTempdata = {};
+    	
+    	angular.forEach($scope.data,function(item,key){
+    		if(item.ID == id){
+    			$scope.Name = item.Name;
+    			$scope.Surname = item.Surname;
+    			$scope.Mail = item.Mail;
+    			$scope.Job = item.Is;
+    			$scope.control = item.Sex;
+    			$scope.hiddenID = id;
+    		}
+    	})
+    };
+    $scope.DeleteF = function(id){
+    	angular.forEach($scope.data,function(item,key){
+    		if(item.ID == id)
+    		{
+    			id = id-1; // index value
+    			$scope.data.splice(id,1);
+    			$scope.Name = "";
+    			$scope.Surname = "";
+    			$scope.Mail = "";
+    			$scope.hiddenID = "";
+    		}
+    	});
+    }
+
+});
+	
+
+</script>	
+</body>
+</html>
